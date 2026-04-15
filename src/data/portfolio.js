@@ -130,6 +130,15 @@ export const experience = [
   },
   {
     role: 'SDE-1',
+    team: 'Team Observability',
+    company: 'BrowserStack',
+    period: 'Feb 2025 – Apr 2025',
+    description: 'Onboarded to observability systems and gained exposure to internal monitoring and tooling infrastructure at one of the world\'s leading browser testing platforms.',
+    tech: ['Observability', 'Internal Tooling', 'Monitoring'],
+    current: false,
+  },
+  {
+    role: 'SDE-1',
     team: 'Co-Lending Platform',
     company: 'Saison Omni',
     period: 'Oct 2024 – Feb 2025',
