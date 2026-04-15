@@ -36,7 +36,7 @@ export const themes = {
 const ThemeCtx = createContext(null)
 
 export function ThemeProvider({ children }) {
-  const [themeKey, setThemeKey] = useState('nebula')
+  const [themeKey, setThemeKey] = useState('ocean')
   const theme = themes[themeKey]
 
   useEffect(() => {
