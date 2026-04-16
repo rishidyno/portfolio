@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { fadeUp, scaleIn } from '../utils/motion'
 import { stats } from '../data/portfolio'
+import SplitReveal from './SplitReveal'
 
 function AnimatedCounter({ value, inView }) {
   const [count, setCount] = useState(0)
@@ -30,7 +31,8 @@ export default function About() {
           animate={inView ? 'visible' : 'hidden'} custom={0}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            About <span className="gradient-text">Me</span>
+            <SplitReveal>About </SplitReveal>
+            <SplitReveal className="gradient-text" delay={0.08}>Me</SplitReveal>
           </h2>
           <div className="section-bar" />
 

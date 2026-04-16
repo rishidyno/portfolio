@@ -32,6 +32,9 @@ export default function CursorEffect() {
 
     const onMove = (e) => {
       curPos.current = { x: e.clientX, y: e.clientY }
+      // Update CSS variables for ambient light (no React re-renders)
+      document.documentElement.style.setProperty('--cx', `${e.clientX}px`)
+      document.documentElement.style.setProperty('--cy', `${e.clientY}px`)
       if (dotRef.current) {
         dotRef.current.style.left = `${e.clientX}px`
         dotRef.current.style.top  = `${e.clientY}px`
@@ -126,6 +129,16 @@ export default function CursorEffect() {
 
   return (
     <>
+      {/* Ambient cursor light — full-page radial glow following cursor */}
+      <div
+        className="fixed inset-0 pointer-events-none hidden md:block"
+        style={{
+          zIndex: 2,
+          background: 'radial-gradient(700px circle at var(--cx, -500px) var(--cy, -500px), rgba(var(--rgb),0.065), transparent 40%)',
+          transition: 'background 0.1s linear',
+        }}
+      />
+
       {/* Big slow glow blob */}
       <div
         ref={glowRef}

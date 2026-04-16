@@ -14,6 +14,7 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
+  overflow-x: hidden;
 }
 
 body {
@@ -148,6 +149,13 @@ body {
 .animate-float-slow    { animation: float2 11s cubic-bezier(0.45,0.05,0.55,0.95) 1s   infinite; }
 .animate-pulse-glow    { animation: pulse-glow 3s ease-in-out infinite; }
 .animate-drift         { animation: drift  14s ease-in-out infinite; }
+
+/* ── Editorial hero typography ── */
+.hero-letter {
+  font-size: clamp(3.8rem, 17vw, 16rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
 
 /* ── Noise / grain overlay ── */
 body::after {

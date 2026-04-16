@@ -4,6 +4,7 @@ import { fadeUp, fadeLeft, fadeRight } from '../utils/motion'
 import { Github, Linkedin, Mail, ArrowUpRight, Send, CheckCircle, XCircle, Loader } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { profile } from '../data/portfolio'
+import SplitReveal from './SplitReveal'
 
 const socials = [
   { name: 'GitHub',   icon: Github,   href: profile.social.github   },
@@ -54,7 +55,8 @@ export default function Contact() {
           animate={inView ? 'visible' : 'hidden'} custom={0}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Get In <span className="gradient-text">Touch</span>
+            <SplitReveal>Get In </SplitReveal>
+            <SplitReveal className="gradient-text" delay={0.1}>Touch</SplitReveal>
           </h2>
           <div className="section-bar" />
 

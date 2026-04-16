@@ -3,6 +3,7 @@ import { motion, useInView } from 'framer-motion'
 import { scaleIn, fadeUp } from '../utils/motion'
 import { GraduationCap, MapPin, Calendar, Award } from 'lucide-react'
 import { education } from '../data/portfolio'
+import SplitReveal from './SplitReveal'
 
 export default function Education() {
   const ref    = useRef(null)
@@ -16,7 +17,7 @@ export default function Education() {
           animate={inView ? 'visible' : 'hidden'} custom={0}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="gradient-text">Education</span>
+            <SplitReveal className="gradient-text">Education</SplitReveal>
           </h2>
           <div className="section-bar" />
 

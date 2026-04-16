@@ -1,22 +1,23 @@
 import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { fadeUp, scaleIn } from '../utils/motion'
+import { motion, useInView, useMotionValue, useSpring } from 'framer-motion'
+import { scaleIn } from '../utils/motion'
 import { skills } from '../data/portfolio'
+import SplitReveal from './SplitReveal'
 
 function TiltCard({ children, className }) {
   const ref = useRef(null)
   const onMove = (e) => {
     const el = ref.current; if (!el) return
     const r  = el.getBoundingClientRect()
-    const rx = (((e.clientY - r.top)  / r.height) - 0.5) * -14
-    const ry = (((e.clientX - r.left) / r.width)  - 0.5) *  14
+    const rx = (((e.clientY - r.top)  / r.height) - 0.5) * -12
+    const ry = (((e.clientX - r.left) / r.width)  - 0.5) *  12
     el.style.transition = 'transform 0.06s linear'
-    el.style.transform  = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(12px)`
+    el.style.transform  = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(14px)`
   }
   const onLeave = () => {
     const el = ref.current; if (!el) return
     el.style.transition = 'transform 0.8s cubic-bezier(0.23,1,0.32,1)'
-    el.style.transform  = 'perspective(900px) rotateX(0) rotateY(0) translateZ(0)'
+    el.style.transform  = 'perspective(800px) rotateX(0) rotateY(0) translateZ(0)'
   }
   return (
     <div ref={ref} className={className} onMouseMove={onMove} onMouseLeave={onLeave}
@@ -27,50 +28,70 @@ function TiltCard({ children, className }) {
 }
 
 export default function Skills() {
-  const ref    = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const ref     = useRef(null)
+  const inView  = useInView(ref, { once: true, margin: '-80px' })
+  const gridRef = useRef(null)
+
+  // Global perspective — all cards tilt together on shared plane
+  const rotX = useMotionValue(0)
+  const rotY = useMotionValue(0)
+  const sRotX = useSpring(rotX, { stiffness: 35, damping: 18 })
+  const sRotY = useSpring(rotY, { stiffness: 35, damping: 18 })
+
+  const onMouseMove = (e) => {
+    const el = gridRef.current; if (!el) return
+    const rect = el.getBoundingClientRect()
+    rotX.set(((e.clientY - rect.top  - rect.height / 2) / rect.height) * -5)
+    rotY.set(((e.clientX - rect.left - rect.width  / 2) / rect.width)  *  7)
+  }
+  const onMouseLeave = () => { rotX.set(0); rotY.set(0) }
 
   return (
     <section id="skills" className="py-28 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full blur-[180px] opacity-[0.04]"
         style={{ background: 'var(--af)' }} />
       <div className="max-w-6xl mx-auto px-6 relative">
-        <motion.div ref={ref}
-          variants={fadeUp} initial="hidden"
-          animate={inView ? 'visible' : 'hidden'} custom={0}
-        >
+        <div ref={ref}>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Tech <span className="gradient-text">Stack</span>
+            <SplitReveal>Tech </SplitReveal>
+            <SplitReveal className="gradient-text" delay={0.08}>Stack</SplitReveal>
           </h2>
           <div className="section-bar" />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {skills.map((skill, i) => {
-              const Icon = skill.icon
-              return (
-                <motion.div key={skill.category}
-                  variants={scaleIn} initial="hidden"
-                  animate={inView ? 'visible' : 'hidden'} custom={0.06 * i}
-                >
-                  <TiltCard className="glass-card p-6 h-full">
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${skill.color} mb-4 opacity-80`}>
-                      <Icon size={22} className="text-white" />
-                    </div>
-                    <h3 className="text-base font-semibold mb-3 text-white">{skill.category}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {skill.items.map(item => (
-                        <span key={item}
-                          className="px-2.5 py-1 text-xs rounded-full bg-white/5 text-gray-300 border border-white/10 transition-colors duration-300 hover:border-white/30">
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </TiltCard>
-                </motion.div>
-              )
-            })}
+          {/* Global perspective wrapper */}
+          <div style={{ perspective: '1400px' }} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+            <motion.div
+              ref={gridRef}
+              style={{ rotateX: sRotX, rotateY: sRotY, transformStyle: 'preserve-3d' }}
+              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {skills.map((skill, i) => {
+                const Icon = skill.icon
+                return (
+                  <motion.div key={skill.category}
+                    variants={scaleIn} initial="hidden"
+                    animate={inView ? 'visible' : 'hidden'} custom={0.06 * i}
+                  >
+                    <TiltCard className="glass-card p-6 h-full">
+                      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${skill.color} mb-4 opacity-80`}>
+                        <Icon size={22} className="text-white" />
+                      </div>
+                      <h3 className="text-base font-semibold mb-3 text-white">{skill.category}</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {skill.items.map(item => (
+                          <span key={item}
+                            className="px-2.5 py-1 text-xs rounded-full bg-white/5 text-gray-300 border border-white/10 transition-colors duration-300 hover:border-white/30">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </TiltCard>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

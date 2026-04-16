@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useTheme } from '../context/ThemeContext'
+import { useLenis } from '../context/LenisContext'
 
 // Viscous fluid constants
 const SPRING       = 0.014   // weak spring = slow heavy return
@@ -12,11 +13,28 @@ const CONNECT_DIST = 130     // max line distance
 const SHOCKWAVE_V  = 5       // shockwave ring expansion speed
 
 export default function ParticleCanvas() {
-  const canvasRef = useRef(null)
-  const { theme } = useTheme()
-  const themeRef  = useRef(theme)
+  const canvasRef  = useRef(null)
+  const { theme }  = useTheme()
+  const themeRef   = useRef(theme)
+  const lenis      = useLenis()
+  const scrollVel  = useRef(0)
 
   useEffect(() => { themeRef.current = theme }, [theme])
+
+  // Subscribe to Lenis scroll velocity
+  useEffect(() => {
+    if (!lenis) return
+    const handler = ({ velocity }) => {
+      scrollVel.current = velocity ?? 0
+    }
+    lenis.on('scroll', handler)
+    // Decay velocity when not scrolling
+    const decay = setInterval(() => {
+      if (Math.abs(scrollVel.current) > 0.05) scrollVel.current *= 0.88
+      else scrollVel.current = 0
+    }, 16)
+    return () => { lenis.off('scroll', handler); clearInterval(decay) }
+  }, [lenis])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -123,6 +141,10 @@ export default function ParticleCanvas() {
       }
 
       /* update particles */
+      const scrollBoost = Math.min(2.5, Math.abs(scrollVel.current) * 0.35)
+      const effectiveRepulseR = REPULSE_R * (1 + scrollBoost * 0.6)
+      const effectiveRepulseF = REPULSE_F + scrollBoost * 2.5
+
       for (const p of particles) {
         const mdx  = p.x - mouse.x
         const mdy  = p.y - mouse.y
@@ -130,17 +152,23 @@ export default function ParticleCanvas() {
 
         // surface tension: attract from distance, repel when close
         if (mDist < ATTRACT_R && mDist > 0) {
-          if (mDist < REPULSE_R) {
-            // repulsion (push away)
-            const f = ((REPULSE_R - mDist) / REPULSE_R) * REPULSE_F
+          if (mDist < effectiveRepulseR) {
+            // repulsion (push away) — stronger when scrolling
+            const f = ((effectiveRepulseR - mDist) / effectiveRepulseR) * effectiveRepulseF
             p.vx += (mdx / mDist) * f
             p.vy += (mdy / mDist) * f
           } else {
             // attraction (surface tension ring)
-            const f = ((ATTRACT_R - mDist) / (ATTRACT_R - REPULSE_R)) * ATTRACT_F
+            const f = ((ATTRACT_R - mDist) / (ATTRACT_R - effectiveRepulseR)) * ATTRACT_F
             p.vx -= (mdx / mDist) * f
             p.vy -= (mdy / mDist) * f
           }
+        }
+
+        // Scroll velocity adds random burst energy to all particles
+        if (scrollBoost > 0.3) {
+          p.vx += (Math.random() - 0.5) * scrollBoost * 0.5
+          p.vy += (Math.random() - 0.5) * scrollBoost * 0.5
         }
 
         // spring toward home (viscous — slow return)

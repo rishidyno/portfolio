@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { scaleIn, fadeUp } from '../utils/motion'
 import { achievements } from '../data/portfolio'
+import SplitReveal from './SplitReveal'
 
 export default function Achievements() {
   const ref    = useRef(null)
@@ -17,7 +18,8 @@ export default function Achievements() {
           animate={inView ? 'visible' : 'hidden'} custom={0}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Achievements &amp; <span className="gradient-text">Highlights</span>
+            <SplitReveal>Achievements &amp; </SplitReveal>
+            <SplitReveal className="gradient-text" delay={0.12}>Highlights</SplitReveal>
           </h2>
           <div className="section-bar" />
 
