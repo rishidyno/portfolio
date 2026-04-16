@@ -16,17 +16,17 @@ export const profile = {
 }
 
 export const stats = [
-  { label: 'Years of Experience', value: 4 },
+  { label: 'Years of Experience', value: 2 },
   { label: 'Companies', value: 4 },
   { label: 'Projects Built', value: 10 },
-  { label: 'DSA Problems', value: 600 },
+  { label: 'DSA Problems', value: 700 },
 ]
 
 export const skills = [
   {
     category: 'Languages',
     icon: Code2,
-    items: ['Java', 'Python', 'JavaScript', 'Kotlin', 'C/C++', 'SQL'],
+    items: ['Java', 'Python', 'JavaScript', 'Go', 'Kotlin', 'C/C++', 'SQL'],
     color: 'from-blue-500 to-cyan-500',
   },
   {
