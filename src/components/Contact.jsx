@@ -17,6 +17,7 @@ export default function Contact() {
   const inView  = useInView(ref, { once: true, margin: '-80px' })
   const [formData, setFormData] = useState({ from_name: '', from_email: '', message: '' })
   const [status, setStatus]     = useState('idle')
+  const [copied, setCopied]     = useState(false)
 
   const handleChange = (e) => setFormData(p => ({ ...p, [e.target.name]: e.target.value }))
 
@@ -68,15 +69,24 @@ export default function Contact() {
                 {socials.map((s, i) => {
                   const Icon = s.icon
                   return (
-                    <motion.a key={s.name} href={s.href}
+                    <motion.a key={s.name} href={s.name === 'Email' ? undefined : s.href}
                       target={s.name !== 'Email' ? '_blank' : undefined} rel="noopener noreferrer"
                       variants={fadeLeft} initial="hidden"
                       animate={inView ? 'visible' : 'hidden'} custom={0.2 + i * 0.1}
                       className="glass-card px-5 py-4 flex items-center gap-3 group"
+                      onClick={s.name === 'Email' ? (e) => {
+                        e.preventDefault()
+                        navigator.clipboard.writeText('rishiraj727909.work@gmail.com')
+                        setCopied(true)
+                        setTimeout(() => setCopied(false), 2200)
+                      } : undefined}
+                      style={s.name === 'Email' ? { cursor: 'none' } : {}}
                     >
                       <Icon size={19} className="text-gray-400 group-hover:text-white transition-colors duration-300" />
                       <span className="text-gray-300 group-hover:text-white transition-colors duration-300 font-medium text-sm">
-                        {s.name}
+                        {s.name === 'Email' && copied ? (
+                          <span className="text-green-400">Copied!</span>
+                        ) : s.name}
                       </span>
                       <ArrowUpRight size={15} className="text-gray-600 group-hover:text-gray-300 transition-colors duration-300 ml-auto" />
                     </motion.a>
